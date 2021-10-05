@@ -53,7 +53,25 @@ router.patch('/:id', function(req, res) {
 
 // delete a resource - Delete
 router.delete('/:id', function(req, res) {
-    res.status(200).json({ message: "deleted the resource" });
+    // capture the id
+    var id = req.params.id;
+
+    // open the file for reading
+    const rawdata = fs.readFileSync('data.json'); // <Buffer <hex code>
+    var students = JSON.parse(rawdata);
+
+    // if found delete it
+    if (students.length > id) {
+        // modify the object
+        students.splice(id, 1);
+
+        // write to the file
+        const data = fs.writeFileSync('data.json', JSON.stringify(students));
+
+        res.status(200).json({ message: "ok" });
+    } else {
+        res.status(500).json({ message: "Something went wrong" });
+    }    
 });
 
 // ----------------------------------------------------------------- end routes/endpoints
