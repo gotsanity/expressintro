@@ -1,1 +1,1 @@
-var test = 'im a newfeature';
+var test = 'im fixed';
