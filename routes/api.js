@@ -21,6 +21,20 @@ router.get('/', function(req, res) {
     }
 });
 
+// get one of a resource - Read
+router.get('/:id', function(req, res) {
+    try {
+        const rawdata = fs.readFileSync('data.json'); // <Buffer <hex code>
+        var students = JSON.parse(rawdata);
+    
+        console.log(students[req.params.id]);
+    
+        res.status(200).json(students[req.params.id]);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // create a new resource - Create
 router.post('/', function(req, res) {
     try {
@@ -72,7 +86,37 @@ router.post('/', function(req, res) {
 
 // updated a resource - Update
 router.patch('/:id', function(req, res) {
-    res.status(200).json({ message: "edited the resource" });
+    try {
+        console.log("Object being patched is: ", req.params.id, req.body);
+        // open the file
+        const rawdata = fs.readFileSync('data.json');
+        // decode the file (parse) so we can use it
+        var students = JSON.parse(rawdata);
+
+        // add data, but controlled
+        var id = req.params.id;
+        var rawBody = req.body;
+
+        if (rawBody.name != null) {
+            students[id].name = rawBody.name;
+        }
+        
+        if (rawBody.age != null) {
+            students[id].age = rawBody.age;
+        }
+        
+        if (rawBody.currentGame != null) {
+            students[id].currentGame = rawBody.currentGame;
+        }
+
+        // save (write) the data back to the file
+        const data = fs.writeFileSync('data.json', JSON.stringify(students));
+
+        // return the data to the user
+        res.status(200).json(students[id]);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
 // delete a resource - Delete
